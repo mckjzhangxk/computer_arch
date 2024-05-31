@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "ioctl.h": "c",
+        "fcntl.h": "c",
+        "signal.h": "c"
+    }
+}

@@ -1,0 +1,78 @@
+## 如何向kernel添加新功能
+### 静态添加：把功能添加到源码中，随着uImage进行编译
+
+```sh
+# 复习下，这是之前的编译
+make vexpress_defconfig
+#验证配置
+make menuconfig
+# 可选，对nfs4的支持
+# File System —> Network File Systems—>NFS client support for NFS version 4
+
+
+
+
+make modules -j 2
+make dtbs    -j 2
+# 0x60003000是kernel加载的起始地址
+make LOADADDR=0x60003000 uImage  -j 2
+```
+
+
+
+- /driver/char/下加入[myhello.c](data/myhello.c)
+- 编辑/drivers/char/KConfig文件，KConfig可以认为menuconfig的菜单项
+```sh
+   #39行处添加如下内容：
+
+   config MY_HELLO
+   	tristate "This is a hello test"
+   	help
+   		This is a test for kernel new function
+```
+- 编辑/drivers/char/Makefile文件，让菜单配置与源码关联
+```sh
+   #拷贝18行，粘贴在下一行，修改成：
+   obj-$(CONFIG_MY_HELLO)     += myhello.o
+```
+
+- make menuconfig,勾选：Device Drivers->Character devices->This is a hello test
+- 检查/driver/char/myhello.o，启动系统也可以看到打印出来的信息。
+
+## 动态添加
+- 生成.ko文件，相当于plugin
+```sh
+#Device Drivers->Character devices 配置成M
+make menuconfig
+
+make LOADADDR=0x60003000 uImage  -j 2 
+make modules
+```
+
+- 如果模块文件与linux源码不是一个项目，借助[Makefile](data/Makefile)
+```sh
+目录结构：
+-- Makefile
+-- zxkhello.c
+
+# 编译
+make ARCH=arm modules
+
+# 解释以下
+# make -C $(KERNELDIR) M=$(PWD) modules
+# -C 表示到KERNELDIR 的目录去执行 make
+# M= 表示 模块源码所在的路径
+```
+
+## 如何使用.ko文件
+
+```sh
+insmod myhello.ko #插入ko
+lsmod  #查看所有ko
+rmmod myhello  #移除ko
+
+
+dmesg  #查看模块打印日志
+dmesg -C #清空模块打印日志
+
+```
