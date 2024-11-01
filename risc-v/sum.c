@@ -58,6 +58,22 @@ int EntityParamCaller(){
     x.c=1;
     EntityParam(x);
 }
+
+struct Entity GetLargeObject(int x){
+    struct Entity o;
+
+    if(x%2==0){
+        o.a=o.b=o.c=22;
+    }else{
+         o.a=o.b=o.c=99;
+    }
+    return o;
+}
+
+void my_GetLargeObject(int x){
+    struct Entity d=GetLargeObject(x);
+    printf("%d\n",d.a);
+}
 //
 //int fib(int n){
 //    if(n<=2)

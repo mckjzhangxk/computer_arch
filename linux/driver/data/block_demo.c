@@ -77,7 +77,7 @@ int my_open_cdev (struct inode * inode, struct file * file){
           return -1;
       
       //阻塞：直到 条件满足
-      int ret=wait_event_interruptible(obj->wq, (obj->head+1)%MAX_SIZE!=obj->tail  );/或者 wait_event(wq,condition) //深度睡眠
+      int ret=wait_event_interruptible(obj->wq, (obj->head+1)%MAX_SIZE!=obj->tail  );//或者 wait_event(wq,condition) //深度睡眠
       if (ret)//信号被中断
       {
         return -ERESTART;

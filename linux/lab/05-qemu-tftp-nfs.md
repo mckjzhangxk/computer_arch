@@ -33,9 +33,10 @@ bootm 0x60003000 - 0x60500000
 
 
 # 可以uboot编译的时候设置好bootcmd
+make menuconfig
 # Boot options —> Enable a default value for bootcmd，
 # 输入以下内容
-setenv ipaddr 192.168.33.144;setenv serverip 192.168.33.145;tftp 0x60003000 uImage;tftp 0x60500000 vexpress-v2p-ca9.dtb;setenv bootargs "root=/dev/mmcblk0 rw console=ttyAMA0 ip= 192.168.33.144";bootm 0x60003000 - 0x60500000;
+setenv ipaddr 192.168.33.144;setenv serverip 192.168.33.145;tftp 0x60003000 uImage;tftp 0x60500000 vexpress-v2p-ca9.dtb;setenv bootargs 'root=/dev/mmcblk0 rw console=ttyAMA0 ip= 192.168.33.144';bootm 0x60003000 - 0x60500000;
 ```
 
 

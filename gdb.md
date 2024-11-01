@@ -18,6 +18,7 @@ x /c $a1    #打印a1所指的字符
 x /2c $a1   #
 x /s $a1    #打印a1所指的字符串
 x /3i $pc   #打印当前pc下的3行指令
+x /14xb $sp #打印从sp地址开始，的14个byte,16进制显示
 
 tui enable 
 layout asm #汇编   显示窗口
@@ -33,4 +34,10 @@ file $file #切换调试file
 
 #打印数组
 p *array@32
+
+#查看 0x5555555551a2的代码
+disassemble 0x5555555551a2
+
+
+backtrace  #打印调用轨迹
 ```

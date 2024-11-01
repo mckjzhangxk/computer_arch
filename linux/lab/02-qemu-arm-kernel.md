@@ -29,7 +29,7 @@ tar -xvf linux-5.10.99.tar.xz
 cd linux-5.10.99
 
 
-修改 Makefile
+修改 Makefile: 370行
 ARCH ?= arm
 CROSS_COMPILE = arm-linux-gnueabi-
 
@@ -44,6 +44,7 @@ make menuconfig
 # 编译
 # zImage为通用内核文件，modules是没有加载进内核的模块(驱动), dtbs为编译的设备树
 make zImage  -j 2
+
 make modules -j 2
 make dtbs    -j 2
 # uImage是专供u-boot引导的内核，这里暂时用不上，但是我们这里先编译，可能会有以下错误
@@ -57,5 +58,5 @@ qemu-system-arm    -M vexpress-a9 \
                    -dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb \
                    -nographic      \
                    -m 512M \
-                   -append "console=ttyAMA0"
+                   -append "console=ttyAMA0"  #传递给内核的参数
 ```
