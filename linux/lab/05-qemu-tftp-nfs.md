@@ -53,6 +53,9 @@ bootm 0x60003000 - 0x60800000
 # 输入以下内容
 tftp 0x60003000 uImage;tftp 0x60800000 vexpress-v2p-ca9.dtb;setenv bootargs 'root=/dev/nfs rw nfsroot=192.168.33.145:/home/zhangxk/project/linux/rootfs,proto=tcp,nfsvers=3,nolock init=/linuxrc ip=192.168.33.144 console=ttyAMA0';bootm 0x60003000 - 0x60800000;
 
+
+root=/dev/nfs rw nfsroot=192.168.64.1:/Users/zhanggxk/project/linux/arm/rootfs,proto=tcp,nfsvers=3,nolock init=/linuxrc ip=192.168.33.144 console=ttyAMA0
+
 qemu-system-arm    -M vexpress-a9 \
                      -kernel u-boot \
                      -nographic      \

@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-int main(){
+int main(int argc,char*argv[]){
 
     fd_set fd_sets;
     int fd= open("/dev/myrw", O_RDONLY|O_NONBLOCK);//需要非阻塞，防止后面read block

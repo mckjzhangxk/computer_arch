@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-int main(int argc,char argv[]) {
+int main(int argc,char* argv[]) {
     // 文件路径
     char *file_path ="/dev/myrw"
 ;

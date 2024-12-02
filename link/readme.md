@@ -54,6 +54,10 @@ DYLD_LIBRARY_PATH       #mac
 #执行程序
 ./link_call_shared
 ```
+- <font color=red>编译可执行文件</font>
+```sh
+x86_64-elf-gcc -I $Include -L $Lib -static  -nostartfiles $Lib/crt1.o  $Lib/crti.o  $Lib/crtn.o a.c
+```
 ## 同时存在 静态动态库，链接器会先选择谁
 假设同时存在 libvector.a,libvector.dylib在build目录，使用如下命令
 ```shell

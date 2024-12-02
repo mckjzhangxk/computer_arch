@@ -180,3 +180,32 @@ qemu-system-arm    -M vexpress-a9 \
                    -append "root=/dev/mmcblk0 rw console=ttyAMA0" \
                    -sd rootfs.ext3
 ```
+
+
+### 补充，编译x86的linux(qemu)内核
+
+```sh
+make x86_64_defconfig
+
+make menuconfig
+# 1/在 Device Drivers 中启用 Virtio drivers。
+# 2/在 Networking support 中启用 Virtio network driver。
+
+# 3.Device Drivers -> Network device support -> Ethernet driver support -> Intel devices
+# 确保启用了 Intel(R) PRO/1000 Gigabit Ethernet support（即 e1000 驱动），以及 e1000e 驱动（支持更新型号）。
+
+
+make -j
+
+
+qemu-system-x86_64    -M pc \
+                      -kernel bzImage \
+                      -nographic      \
+                      -m 512M \
+                      -device virtio-rng-pci \
+		              -nic vmnet-shared \
+                      -append "root=/dev/sda rw console=ttyS0" \
+                      -hda rootfs_busybox.x86.ext3
+```
+
+

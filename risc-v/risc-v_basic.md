@@ -41,19 +41,34 @@
 
 2.处理trap用到的寄存器
 
-  | 寄存器      | 描述            |
-    |----------|---------------|
-  | sscratch |               |
-  | sepc     | 触发异常时候正在执行的pc |
-  | sip      | 等待处理的异常       |
-  | sscause  | 异常的原因         |
-  | stval    | 造成异常的数值       |
 
+  | 寄存器      | 描述                                      |
+  |-|-|
+  | sscratch |                                         |
+  | sepc     | 触发异常时候正在执行的pc                           |
+  | sip      | 等待处理的异常，<font color=pink>记录是否被触发</font> |
+  | sscause  | 异常的原因                                   |
+  | stval    | 造成异常的数值                                 |
+
+
+  
   | 寄存器  | 描述              |
-    |------|-----------------|
+  |- |- |
   | stap | 保存vm table的物理地址 |
 3. sip、sie的结构
 - 两者结构完全相同，sie是使能位，sip是标志位
 - sip,sie下的中断分成3类:software(SIP),timer(TIP),external(EIP)
 - sip,sie下的中断分两种模式，U/S
-- 所以结合上面，有6中中断 SSIP,USIP,STIP,UTIP,SEIP,UEIP
+- 所以结合上面，有6中中断 SSIP,USIP,STIP,UTIP,SEIP,UEIP,见手册74页
+
+4 sstatus的结构:见手册68页
+- sie 位，是所有中断的使能位， 1-开启，0-关闭
+- spie位, 当trap发生 或者trap返回的时候临时存储sie位
+- - trap发生： 设置 spie=sie, sie=0,此时不会再触发中断。
+- - sret执行： 设置 sie=spie, spie=0, 恢复之前的sie位
+- spp: <font color=gree>记录trap发生之前 cpu的模式
+- - usermode -> supermode, 设置spp=0
+- - supermode -> supermode, 设置spp=1</font>
+- spp <font color=orange>在sret执行时候，并根据spp，确定返回的模式
+- -  if spp=0, sret--->usermode
+- -  if spp=1, sret--->supermode </font>

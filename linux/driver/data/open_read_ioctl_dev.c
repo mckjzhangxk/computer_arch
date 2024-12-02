@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 
-int main(int argc,char argv[]) {
+int main(int argc,char* argv[]) {
    
     
     // 使用 open 函数打开文件，返回文件描述符

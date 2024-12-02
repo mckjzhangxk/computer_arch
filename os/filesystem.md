@@ -10,7 +10,18 @@
 - - 4.#inode
 - - 5.log,inode,bitmap的起始位置
 - Inode对应文件或者文件夹，由一个inode number标识。
-
+```c
+struct superblock {
+  uint magic;        // Must be FSMAGIC
+  uint size;         // Size of file system image (blocks),表示一共多少个block，就会有多少个bitmap的位
+  uint nblocks;      // Number of data blocks
+  uint ninodes;      // Number of inodes.
+  uint nlog;         // Number of log blocks
+  uint logstart;     // Block number of first log block
+  uint inodestart;   // Block number of first inode block
+  uint bmapstart;    // Block number of first free map block
+};
+```
 ## xv6的基本结构
 | 名称                    | 数值                              |
 |-----------------------|---------------------------------|

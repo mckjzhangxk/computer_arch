@@ -4,7 +4,7 @@
 - [kernel 下载地址](http://www.kernel.org)
 - 默认配置：
 - - .config文件包括编译内核的设置，eg: CONFIG_ARM=y...
-- - make < soc_name >_defconfig表示导入soc_name的默认配置，soc_name参考arch/arm/configs下的文件。
+- - make < soc_name >_defconfig表示导入soc_name的默认配置，soc_name参考<font color=pink>arch/arm/configs</font>下的文件。
 - 定制化配置
 - - make menuconfig最终也是修改.config文件。
 - - <font color=pink>编译选项[]对应Y/N，<>对应Y/N/M， Y表示包含，N表示不包含，M表示编译成独立的模块（程序），也就是不会编译到uImage中.</font>

@@ -1,4 +1,4 @@
-[berkeley](https://inst.eecs.berkeley.edu/~cs61c/fa22/)
+[berkeley](https://inst.eecs.berkeley.edu/~cs61c/fa24/)
 
 [中文教程](https://www.bilibili.com/video/BV1qH4y1C7oR/?spm_id_from=333.788&vd_source=ba17c91d27a087001a89289fd2c2af49)
 
