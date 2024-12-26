@@ -211,3 +211,22 @@ ldd --version
 ```shell
 dsymutil aa.dylib
 ```
+
+
+## 动态库相关的节 
+
+- .dynamic： 关于动态库中的信息， 比如 (.dynsym,.dynsym,.dynstr,.rela.dyn,.rela.plt)的地址。
+- .dynsym: 动态库支持导出的 符号
+- .dynstr: 动态库中的字符串
+- .rela.dyn： .got中需要重定向的地址
+- .rela.plt   .plt.got中需要重定向的地址。
+
+### 对比编译重定向与加载重定向
+```sh
+# 编译
+.text  <--- .rela.text, 使用.sym
+
+# 加载
+.got      <------ .rela.dyn, 使用.dynsym
+.plt.got  <------ .rela.plt, 使用.dynsym
+```

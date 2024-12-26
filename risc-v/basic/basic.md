@@ -32,7 +32,7 @@ qemu-system-riscv32 -nographic \
 #把调试信息设置到全局
 #vim ~/.gdbinit
 #添加如下一行
-add-auto-load-safe-path /Users/zhanggxk/project/cs15213/risc-v/basic/.gdbinit
+# add-auto-load-safe-path /Users/zhanggxk/project/cs15213/risc-v/basic/.gdbinit
 
 #启动调试
 riscv64-unknown-elf-gdb add.elf -x .gdbinit

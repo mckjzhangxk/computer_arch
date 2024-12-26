@@ -1,6 +1,7 @@
 
 ```shell
 si #逐指令,对汇编很重要
+step #逐语句，进入
 n #逐语句，不进入
 finish #结束当前函数
 c #continue

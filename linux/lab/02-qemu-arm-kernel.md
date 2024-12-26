@@ -7,7 +7,11 @@
 - - make < soc_name >_defconfig表示导入soc_name的默认配置，soc_name参考<font color=pink>arch/arm/configs</font>下的文件。
 - 定制化配置
 - - make menuconfig最终也是修改.config文件。
-- - <font color=pink>编译选项[]对应Y/N，<>对应Y/N/M， Y表示包含，N表示不包含，M表示编译成独立的模块（程序），也就是不会编译到uImage中.</font>
+- - <font color=pink>编译选项[]对应Y/N，<>对应Y/N/M， Y表示包含，N表示不
+包含，M表示编译成独立的模块（程序），也就是不会编译到uImage中.</font>
+- - KConfig文件对应Menuconfig的配置菜单，最终以<font color=gree>CONFIG_{KEY}={VAL}的形式写入到.config文件中</font>。KEY对应某个 特性,VAL一般对应 -y(编译进内核),-m(编译成模块)
+
+
 - 编译生成：
 - - vmlinux:ELF格式的kernel，不能裸机运行
 - - zImage: objcopy vmlinux  会获得 zImage(可用于裸机，但uboot不识别)
@@ -24,6 +28,22 @@
 - - make dtbs:会编译 某个型号的全部设备树
 
 ```sh
+#############64位arm编译步骤########
+#也可使用以下命令而不修改 Makefile
+# 深度clean
+make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- mrproper
+# 64位arm只有 defconfig, 这里是默认的virt设备
+make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- defconfig
+make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- menuconfig
+
+make -j2 ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- all
+make -j2 ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- modules
+make -j2 ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- dtbs
+#######################################
+
+```
+```sh
+
 wget https://mirrors.tuna.tsinghua.edu.cn/kernel/v5.x/linux-5.10.99.tar.xz
 tar -xvf linux-5.10.99.tar.xz
 cd linux-5.10.99
@@ -59,4 +79,42 @@ qemu-system-arm    -M vexpress-a9 \
                    -nographic      \
                    -m 512M \
                    -append "console=ttyAMA0"  #传递给内核的参数
+```
+
+
+## 内核模块选择
+
+
+|配置名称|作用|开启|
+|-|-|-|
+|CONFIG_KALLSYMS|支持kallsyms_lookup_name(查询所有符号地址的函数,/proc/kallsyms),||
+|CONFIG_FUNCTION_TRACER|ftrace的支持||
+|CONFIG_FUNCTION_GRAPH_TRACER|ftrace的支持||
+|CONFIG_FTRACE_SYSCALLS|ftrace的支持||
+|CONFIG_DYNAMIC_FTRACE|ftrace的支持||
+|CONFIG_DEBUG_FS|查看支持trace的调用:/sys/kernel/debug/tracing/available_filter_functions||
+|CONFIG_HAVE_FUNCTION_TRACER|||
+|CONFIG_HAVE_FUNCTION_GRAPH_TRACER|||
+|CONFIG_HAVE_SYSCALL_TRACEPOINTS|||
+|CONFIG_HAVE_DYNAMIC_FTRACE|||
+
+
+
+```sh
+# 开启 CONFIG_DEBUG_FS：
+# Kernel hacking  ---> 
+    # [*] Debug Filesystem
+#临时挂载 
+mount -t debugfs none /sys/kernel/debug
+# 将挂载持久化（可选）：在 /etc/fstab 中添加以下行：
+debugfs  /sys/kernel/debug  debugfs  defaults  0  0
+
+zcat /proc/config.gz | grep CONFIG_DEBUG_FS
+```
+
+```sh
+CONFIG_FUNCTION_TRACER=y
+CONFIG_DYNAMIC_FTRACE=y
+CONFIG_FTRACE_MCOUNT_RECORD=y
+CONFIG_FUNCTION_GRAPH_TRACER=y
 ```

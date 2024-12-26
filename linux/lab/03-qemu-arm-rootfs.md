@@ -35,6 +35,17 @@ make  -j 2
 make install
 ```
 
+```sh 
+方法2
+make distclean
+make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- defconfig
+make -j2 ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- 
+make CONFIG_PREFIX=/tmp ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- install
+
+# 查看busybox需要的 动态库
+aarch64-none-linux-gnu-readelf -a busybox |grep "program interpreter:"
+aarch64-none-linux-gnu-readelf -a busybox |grep "Shared library"
+```
 ### 制作动态库
 ```sh
 # 在ubuntu上，arm的动态库所在位置
@@ -95,7 +106,9 @@ export LD_LIBRARY_PATH=/lib:/usr/lib
 /bin/mount -n -t ramfs ramfs /var
 /bin/mount -n -t ramfs ramfs /tmp
 /bin/mount -n -t sysfs none /sys
+/bin/mount -n -t proc none /proc
 /bin/mount -n -t ramfs none /dev
+
 /bin/mkdir /var/tmp
 /bin/mkdir /var/modules
 /bin/mkdir /var/run
@@ -170,6 +183,13 @@ sudo cp -r /home/hack520/project/rootfs/* /mnt
 sudo umount /mnt
 ```
 
+### 制作根系统RAMFs
+```sh
+cd ${OUTDIR}/rootfs
+find .|cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
+gzip -f initramfs.cpio
+```
+
 ## 启动kernel
 ```sh
 qemu-system-arm    -M vexpress-a9 \
@@ -207,5 +227,6 @@ qemu-system-x86_64    -M pc \
                       -append "root=/dev/sda rw console=ttyS0" \
                       -hda rootfs_busybox.x86.ext3
 ```
+
 
 
