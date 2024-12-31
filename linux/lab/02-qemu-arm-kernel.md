@@ -43,6 +43,11 @@ make -j2 ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- dtbs
 
 ```
 ```sh
+# https://git.kernel.org/
+# git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+# v5.15.163
+# git clone ${KERNEL_REPO} --depth 1 --single-branch --branch ${KERNEL_VERSION}
+# git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git --depth 1 --single-branch --branch v5.15.0
 
 wget https://mirrors.tuna.tsinghua.edu.cn/kernel/v5.x/linux-5.10.99.tar.xz
 tar -xvf linux-5.10.99.tar.xz
@@ -93,11 +98,26 @@ qemu-system-arm    -M vexpress-a9 \
 |CONFIG_FTRACE_SYSCALLS|ftrace的支持||
 |CONFIG_DYNAMIC_FTRACE|ftrace的支持||
 |CONFIG_DEBUG_FS|查看支持trace的调用:/sys/kernel/debug/tracing/available_filter_functions||
-|CONFIG_HAVE_FUNCTION_TRACER|||
-|CONFIG_HAVE_FUNCTION_GRAPH_TRACER|||
-|CONFIG_HAVE_SYSCALL_TRACEPOINTS|||
-|CONFIG_HAVE_DYNAMIC_FTRACE|||
 
+
+
+
+```sh
+# 验证是否开启ftrace
+zcat /proc/config.gz |grep CONFIG_?
+# 是否包含以下
+# linux:4.19
+CONFIG_FUNCTION_TRACER=y
+CONFIG_FUNCTION_GRAPH_TRACER=y
+CONFIG_DYNAMIC_FTRACE=y
+CONFIG_FTRACE_MCOUNT_RECORD=y
+
+# linux:4.9.118
+CONFIG_HAVE_FUNCTION_TRACER=y
+CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
+CONFIG_HAVE_DYNAMIC_FTRACE=y
+CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
+```
 
 
 ```sh
@@ -110,11 +130,4 @@ mount -t debugfs none /sys/kernel/debug
 debugfs  /sys/kernel/debug  debugfs  defaults  0  0
 
 zcat /proc/config.gz | grep CONFIG_DEBUG_FS
-```
-
-```sh
-CONFIG_FUNCTION_TRACER=y
-CONFIG_DYNAMIC_FTRACE=y
-CONFIG_FTRACE_MCOUNT_RECORD=y
-CONFIG_FUNCTION_GRAPH_TRACER=y
 ```

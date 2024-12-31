@@ -42,3 +42,45 @@ disassemble 0x5555555551a2
 
 backtrace  #打印调用轨迹
 ```
+
+
+## qemu调试
+```sh
+```sh
+# 内核编译启用：
+# 启用 CONFIG_DEBUG_INFO（生成调试符号）。
+# 启用 CONFIG_GDB_SCRIPTS（用于 GDB 脚本支持）。
+
+# 启动 GDB
+gdb-multiarch vmlinux
+# 连接到 QEMU
+target remote :1234
+# (1) 加载符号表
+symbol-file vmlinux
+# (2) 设置断点
+break start_kernel
+break sys_mkdir
+```
+
+## 编译注意
+- 加入-g,-O0，不要优化代码。
+- 如果使用buildroot,可以安装gdb，gdbserver调试程序
+```sh
+
+
+# target上安装 gdb,gdbserver的步骤：
+
+# make menuconfig
+#   ToolChain -> Enable C++ support
+#   Target Package ->Debugging, profiling and benchmark
+BR2_PACKAGE_GDB =y
+BR2_PACKAGE_GDB_SERVER =y
+
+# 编译本机跨平台gdb
+#   ToolChain -> enable cross gdb
+BR2_PACKAGE_HOST_GDB =y
+
+
+# Build options –-> build packages with debugging symbols
+# Build options –-> 停用 strip target binaries
+```

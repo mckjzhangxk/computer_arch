@@ -25,6 +25,22 @@ sudo tunctl -u root -d tap0
 sudo brctl delif br0 tap0
 ```
 
+- 自动化以上过程
+```sh
+
+# /etc/qemu-ifup
+ip link add br0 type bridge
+ip addr add 192.168.33.145/24 dev br0
+ip link set br0 up
+
+tunctl -u root -t tap0
+ifconfig tap0 0.0.0.0 promisc up
+brctl addif br0 tap0
+
+# /etc/qemu-ifdown
+tunctl -u root -d tap0
+brctl delif br0 tap0
+```
 
 ## 额外配置
 ```sh
