@@ -72,6 +72,8 @@ break sys_mkdir
 
 # make menuconfig
 #   ToolChain -> Enable C++ support
+#   ToolChain ->  Build cross gdb for the host
+#   ToolChain ->  TUI support
 #   Target Package ->Debugging, profiling and benchmark
 BR2_PACKAGE_GDB =y
 BR2_PACKAGE_GDB_SERVER =y
@@ -83,4 +85,33 @@ BR2_PACKAGE_HOST_GDB =y
 
 # Build options –-> build packages with debugging symbols
 # Build options –-> 停用 strip target binaries
+
+```
+
+```sh
+# target上开启gdbserver 
+gdbserver 0.0.0.0:1234  myserver
+
+# 本机开启
+${BUILD_ROOT_PATH}/output/host/bin/aarch64-linux-gdb myserver
+target remote :1234
+```
+
+[交叉编译](https://sourceware.org/gdb/wiki/BuildingCrossGDBandGDBserver)
+- AutoConf的三个属性
+- - build: 执行编译的 主机系统架构
+- - host:  编译生成目标 的运行架构，  一般指定编译器的前缀
+- - target:  一般同host,不需要指定。但对于cross-gdb, target表示 为哪个 架构编译的 gdb。
+- 编译本机调试远程的gdb
+```sh
+./configure --target=arm-linux-gnueabi --prefix=
+make all-gdb -j4
+make install-gdb -j4
+```
+
+- 编译远程gdbserver
+```sh
+./configure --host=arm-linux-gnueabi --prefix=
+make all-gdbserver -j4
+make install-gdbserver -j4
 ```
