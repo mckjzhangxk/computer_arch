@@ -68,7 +68,7 @@ ip l |grep tap0
 adb root
 adb shell
 # 设置ip，有时候需要设置 netmask,broadcast
-ifconfig eth0 192.163.33.17 netmask 255.255.255.0
+ifconfig eth0 192.168.33.17 netmask 255.255.255.0
 ifconfig eth0 broadcast 192.163.33.255
 # 或者使用以下命令
 # ip addr add 192.168.33.17/24 broadcast 192.168.33.255 dev eth0

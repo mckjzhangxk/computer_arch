@@ -24,3 +24,10 @@ $@ => all
 $< => library.cpp
 $^ => library.cpp main.cpp
 ```
+
+## gcc选项
+- -nostdlib: 不会自动链接libc,会链接crt0.o
+- -nostartfiles: 包含libc，不包含crt0.o
+- -ffreestanding:不依赖标准库（ASIN C）环境（不假设 main() 入口）,eg:定义_GCC_WRAP_STDINT_H宏为0
+- -ffreestanding -nostdlib:完全裸机模式,libc,crt0都不包含.
+- -fvisibility=hidden:让所有符号默认 hidden.

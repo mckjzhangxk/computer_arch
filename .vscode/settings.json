@@ -2,6 +2,10 @@
     "files.associations": {
         "ioctl.h": "c",
         "fcntl.h": "c",
-        "signal.h": "c"
+        "signal.h": "c",
+        "system_stm32f10x.h": "c",
+        "stm32f10x.h": "c",
+        "stdint.h": "c",
+        "core_cm3.h": "c"
     }
 }
