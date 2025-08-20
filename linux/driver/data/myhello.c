@@ -31,6 +31,14 @@
    //动态加载时：由于内核模块的默认入口函数名是init_module,用该宏可以给对应模块入口函数起别名myhello_init
    module_init(myhello_init);
 
+
+
+//    #define ___define_initcall(fn, id, __sec) \
+//         static initcall_t __initcall_##fn##id __used \
+//                 __attribute__((__section__(#__sec ".init"))) = fn;
+
+//    ___define_initcall(myhello_init,6,.initcall6)
+
    //动态加载: 模块在卸载时，对应函数被调用
    //静态加载: 实际上对应函数被忽略
    module_exit(myhello_exit);

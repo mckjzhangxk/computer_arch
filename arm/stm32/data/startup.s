@@ -23,7 +23,7 @@ __heap_limit:
 .size HEAP,.-HEAP
 .size Heap_Mem,.-Heap_Mem
 
-# 终端表的定义
+# 中断表的定义
 .section RESET, "a"
 .align 2
 .type __Vectors, %object

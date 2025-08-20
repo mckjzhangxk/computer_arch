@@ -49,7 +49,7 @@ struct cdev _cdev;
 // 2.cat /proc/devices |grep mycdev ,看到设备号是237
 // 3.mknod /dev/myrw c 237 251
 // chmod 777 /dev/myrw
-// 4../open_dev_read_write
+// 4../open_read_dev
 int __init my_cdev_rw_init(void){
        //1.自动注册设备号
        //   参数：

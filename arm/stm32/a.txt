@@ -1,0 +1,84 @@
+	//开启TIMER3 CH1
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;// 由AFIO控制的推挽输出
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	
+	//开启 TIM2的时钟
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+	
+
+	//时钟源的选择
+	TIM_InternalClockConfig(TIM3);//使用内部时钟
+
+	// 配置  时基单元，ARR,COUNTER,PSC
+	TIM_TimeBaseInitTypeDef baseconfig;
+	// 配置PWM输出72KHZ的波形
+	baseconfig.TIM_Prescaler=1000-1;//预分频寄存器， 这样相当于输入CLK 频率是 7.2KHZ，每1/7200s 计数器+1
+	baseconfig.TIM_Period=100-1;    // ARR: 到达此数值，触发中断， 100相当于1s
+	baseconfig.TIM_CounterMode=TIM_CounterMode_Up;// 计时器模式：向上自加
+	
+	//其他参数
+	baseconfig.TIM_ClockDivision=TIM_CKD_DIV1;// 与输入滤波 采样频率有关，把内部时钟频率分频，给输入滤波
+	baseconfig.TIM_RepetitionCounter=0;//重复计数器，属于高级Timer的内容
+	TIM_TimeBaseInit(TIM3, &baseconfig);//会触发一个UpdateEvent,进而设置UIF=1
+	
+	
+	//中断输出设置，表示到达ARR后，从哪里输出？
+	TIM_ITConfig(TIM3, TIM_IT_CC1,ENABLE);// 表示到达ARR后，触发 CC1的中断
+	
+	
+
+	TIM_OCInitTypeDef  oc1_config;
+	TIM_OCStructInit(&oc1_config );
+	
+	oc1_config.TIM_OCMode=TIM_OCMode_PWM1;//count<ccr ==>1,count>ccr ==>0
+	oc1_config.TIM_OCPolarity=TIM_OCPolarity_High;
+	oc1_config.TIM_OutputState=TIM_OutputState_Enable;//正极输出开启
+	oc1_config.TIM_Pulse=50;//CCR 比较寄存器
+	TIM_OC1Init(TIM3,&oc1_config);
+	
+	//开启 定时器TIMER 2. 
+	TIM_Cmd(TIM3, ENABLE);//开启 CEN位
+
+
+
+
+
+	////////////////
+
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+	
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+//	GPIO_PinRemapConfig(GPIO_PartialRemap1_TIM2, ENABLE);
+//	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;		//GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	TIM_InternalClockConfig(TIM2);
+	
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStructure.TIM_Period = 100 - 1;		//ARR
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 720 - 1;		//PSC
+	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
+	
+	TIM_OCInitTypeDef TIM_OCInitStructure;
+	TIM_OCStructInit(&TIM_OCInitStructure);
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_Pulse = 0;		//CCR
+	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
+	
+	TIM_Cmd(TIM2, ENABLE);

@@ -79,11 +79,10 @@ struct MyDev mydev;
 dev_t devno;
 
 // 编译后的操作：
-// 1.sudo insmod ./my_cdev.ko
-// 2.cat /proc/devices |grep mydev ,看到设备号是237
-// 3.mknod /dev/myrw c 237 251
-// chmod 777 /dev/myrw
-// 4../open_dev_read_write
+// 1.sudo insmod ./my_cdev_read_write_ioctl.ko
+// 2.cat /proc/devices |grep mydev ,看到设备号是236
+// 3.mknod sudo mknod -m 666 /dev/myrw_ctl c 236 251
+// 4../open_read_ioctl_dev
 int __init my_cdev_rw_init(void){
        //1.自动注册设备号
        //   参数：

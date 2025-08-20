@@ -34,6 +34,7 @@ sdkmanager  "system-images;android-30;google_apis;x86_64"
 # 编译工具链
 sdkmanager --list|grep ndk
 sdkmanager "ndk;28.0.12674087"
+sdkmanager --list_installed
 
 # 设置adb,NDK,emulator环境变量
 export PATH=$PATH:/home/hack520/project/android_sdk/platform-tools

@@ -9,7 +9,7 @@
     module_param(g_int,int,0644);
     module_param(g_str,charp,0644);
     module_param_array(g_array,int,NULL,0644);
-
+    //insmod param.ko g_int=33 g_str="zxk" g_array=100,101,102
    int __init my_init(void)
    {
     int i;
