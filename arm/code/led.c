@@ -12,7 +12,11 @@ void setup(){
     // CPX2_1 :GPX2CON[7:4]
     // CPX2_0 :GPX2CON[3:0]
     unsigned int *p=(unsigned int *)GPX2CON;
-    *p=(*p & ~(0xf<<28) ) | (0x01 <<28);
+    // *p=(*p & ~(0xf<<28) ) | (0x01 <<28);
+
+    int input_mode=(0x01 << 28);
+    unsigned int oldvalue = *p& (0x00ffffff);
+    *p = oldvalue | input_mode;
 }
 
 
@@ -27,7 +31,7 @@ void turn_on(){
 }
 void turn_off(){
     unsigned char *p=(unsigned char *)GPX2DAT;
-    *p&=~(1<<7);
+    *p&=0x7f;
 }
 void delay(){
     for (int i = 0; i < 1e9; i++)

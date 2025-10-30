@@ -64,8 +64,8 @@ struct file_operations ops={
 dev_t devno;
 
 // 编译后的操作：
-// 1.sudo insmod ./my_cdev.ko
-// 2.cat /proc/devices |grep mydev ,看到设备号是237
+// 1.sudo insmod ./my_cdev_timer.ko
+// 2.cat /proc/devices |grep mycdev ,看到设备号是237
 // 3.mknod /dev/myrw c 237 251
 // chmod 777 /dev/myrw
 // 4../open_timer

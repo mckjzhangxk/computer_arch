@@ -13,8 +13,48 @@ typedef struct MyDev
   int tail;
 }MyDev;
 
+/////////////////环形队列的方法/////////////////////////////////
 
-int my_open_cdev (struct inode * inode, struct file * file){
+
+static int isEmply(MyDev* obj){
+  return obj->head==obj->tail;
+}
+
+static int isFull(MyDev* obj){
+  return (obj->head+1)%MAX_SIZE==obj->tail;
+}
+static int size(MyDev* obj){
+  int sz=obj->head-obj->tail;
+  if (sz<0)
+    sz+=MAX_SIZE;
+  return sz;
+}
+static int avail(MyDev* obj){
+  return MAX_SIZE-1 -size(obj);
+}
+
+static void writedata(MyDev* obj, char* src, int n){
+  
+  int i;
+  for ( i = 0; i < n; i++){
+       obj->BUF[obj->head]=src[i];
+       obj->head=(obj->head+1)%MAX_SIZE;
+  }
+}
+
+static void readdate(MyDev* obj, char* dst, int n){
+      int i;
+      for ( i = 0; i < n; i++)
+      {
+        dst[i]=obj->BUF[obj->tail];
+        obj->tail=(obj->tail+1)%MAX_SIZE;
+      }
+}
+
+//////////////////////////////////////////////////
+
+
+static int  my_open_cdev (struct inode * inode, struct file * file){
     //container_of 是已知成员变量地址，求结构体地址的 宏
     // file->private_data=inode->i_cdev- &((struct Mydev*)0 )->_cdev
     file->private_data=(void*) container_of(inode->i_cdev,struct MyDev,_cdev);
@@ -22,58 +62,44 @@ int my_open_cdev (struct inode * inode, struct file * file){
     // inode->i_cdev是cdev_add传入的地址，  也就是MyDev 成员_cdev的地址
     return 0;
 }
- int my_release_cdev (struct inode * inode, struct file *file){
+ static int my_release_cdev (struct inode * inode, struct file *file){
   return 0;
  }
- ssize_t my_read_cdev (struct file * file, char *user_addr, size_t n, loff_t * off){
+ static ssize_t my_read_cdev (struct file * file, char *user_addr, size_t n, loff_t * off){
    MyDev* obj=(struct MyDev *)file->private_data;
 
-   if(obj->head==obj->tail){//empty
+   if(isEmply(obj)){//empty
       return -2;
    }
    
-    int sz=obj->head-obj->tail;
-    if (sz<0)
-      sz+=MAX_SIZE;
+    int sz=size(obj);
 
-      int m=n<sz?n:sz;
-      char tmp[m];
-      int p=0,cnt=m;
+    int m=n<sz?n:sz;
+    char tmp[m];
+    readdate(obj,tmp,m);
+    
 
-      int i;
-      for ( i = 0; i < cnt; i++)
-      {
-       tmp[p++]=obj->BUF[obj->tail];
-        obj->tail=(obj->tail+1)%MAX_SIZE;
-      }
-      
       int r=copy_to_user(user_addr, tmp,m);
       if (r){
         return -1;
       }
       return m;
  }
- ssize_t my_write_cdev (struct file *file, const char *user_addr, size_t n, loff_t * off){
+ static ssize_t my_write_cdev (struct file *file, const char *user_addr, size_t n, loff_t * off){
    MyDev* obj=(struct MyDev *)file->private_data;
 
-   if( (obj->head+1)%MAX_SIZE==obj->tail){
+   if(isFull(obj)){//full
         return -2;
    }
+   int sz=avail(obj);
 
-   int avil=obj->tail-obj->head-1;
-   if (avil<0)
-      avil+=MAX_SIZE;
    
-   int m=n<avil?n:avil;
+   int m=n<sz?n:sz;
    char tmp[m];
    int r=copy_from_user(tmp,user_addr ,m);
    if (r)
      return -1;
-    int i;
-    for ( i = 0; i < m; i++){
-       obj->BUF[obj->head]=tmp[i];
-       obj->head=(obj->head+1)%MAX_SIZE;
-    }
+  writedata(obj,tmp,m);
 
   
   return m;
