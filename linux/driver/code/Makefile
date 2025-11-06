@@ -24,7 +24,8 @@ else	# 第二次 执行 make  -C $(KERNELDIR) M=$(PWD) modules 的时候进入
 obj-m += my_hello.o
 obj-m += my_param.o
 obj-m += my_register_dev.o
-
+obj-m += my_error_dev.o
+obj-m +=io_poll_demo_retcode.o
 
 obj-m += my_cdev.o
 obj-m += my_cdev_read_write.o
@@ -40,7 +41,11 @@ obj-m +=my_cdev_atomic.o
 obj-m +=my_cdev_spinlock.o
 obj-m +=my_cdev_sem.o
 obj-m +=my_cdev_timer.o
+
+
 obj-m +=my_cdev_led.o
+obj-m +=my_cdev_led_dt.o
+
 
 #数据结构 demo
 obj-m +=struct_list_demo.o

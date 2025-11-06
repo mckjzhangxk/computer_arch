@@ -1,0 +1,26 @@
+# make -C /lib/modules/$(uname -r)/build M=$(PWD) modules
+
+obj-m += my_hello.o
+obj-m += my_param.o
+obj-m += my_register_dev.o
+
+
+obj-m += my_cdev.o
+obj-m += my_cdev_read_write.o
+obj-m += my_cdev_read_write_obj.o
+obj-m +=my_cdev_read_write_ioctl.o
+
+obj-m +=io_none_block_demo.o
+obj-m +=io_block_demo.o
+obj-m +=io_poll_demo.o
+obj-m +=io_signal_demo.o
+
+obj-m +=my_cdev_atomic.o
+obj-m +=my_cdev_spinlock.o
+obj-m +=my_cdev_sem.o
+obj-m +=my_cdev_timer.o
+obj-m +=my_cdev_led.o
+
+#数据结构 demo
+obj-m +=struct_list_demo.o
+obj-m +=struct_rb_tree_demo.o

@@ -37,7 +37,6 @@ qemu-system-arm    -M vexpress-a9 \
 
 ## uboot的使用
 ```sh
-```sh
 setenv ipaddr   192.168.33.144      # 设置u-boot这边的地址(和br0同一网段即可)
 setenv serverip 192.168.33.145       # 设置服务器地址(br0网桥的地址)
 tftp 0x60003000 uImage              # 从tftp下载uImage
@@ -55,6 +54,6 @@ make menuconfig
 # 输入以下内容
 setenv ipaddr 192.168.33.144;setenv serverip 192.168.33.145;tftp 0x60003000 uImage;tftp 0x60500000 vexpress-v2p-ca9.dtb;setenv bootargs 'root=/dev/mmcblk0 rw console=ttyAMA0 init=/linuxrc ip= 192.168.33.144';bootm 0x60003000 - 0x60500000;
 
-
+# 从 nfs 挂载 rootfs
 setenv bootargs 'root=/dev/nfs rw nfsroot=192.168.33.145:/home/zhangxk/project/linux/rootfs,proto=tcp,nfsvers=3,nolock init=/linuxrc ip=192.168.33.144 console=ttyAMA0';bootm 0x60003000 - 0x60800000;
 ```

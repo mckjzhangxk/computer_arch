@@ -8,54 +8,11 @@
 typedef struct MyDev
 {
   struct cdev _cdev;
-
-  
-  char BUF[MAX_SIZE];//最大容量应该是MAX_SIZE-1
-  int head;//下一个写的位置
-  int tail;//下一个读取的位置
+  __poll_t retCode;
   wait_queue_head_t rq;
   wait_queue_head_t wq;
 }MyDev;
 
-/////////////////环形队列的方法/////////////////////////////////
-
-
-static int isEmply(MyDev* obj){
-  return obj->head==obj->tail;
-}
-
-static int isFull(MyDev* obj){
-  return (obj->head+1)%MAX_SIZE==obj->tail;
-}
-static int size(MyDev* obj){
-  int sz=obj->head-obj->tail;
-  if (sz<0)
-    sz+=MAX_SIZE;
-  return sz;
-}
-static int avail(MyDev* obj){
-  return MAX_SIZE-1 -size(obj);
-}
-
-static void writedata(MyDev* obj, char* src, int n){
-  
-  int i;
-  for ( i = 0; i < n; i++){
-       obj->BUF[obj->head]=src[i];
-       obj->head=(obj->head+1)%MAX_SIZE;
-  }
-}
-
-static void readdate(MyDev* obj, char* dst, int n){
-      int i;
-      for ( i = 0; i < n; i++)
-      {
-        dst[i]=obj->BUF[obj->tail];
-        obj->tail=(obj->tail+1)%MAX_SIZE;
-      }
-}
-
-//////////////////////////////////////////////////
 
 
 int my_open_cdev (struct inode * inode, struct file * file){
@@ -70,68 +27,38 @@ int my_open_cdev (struct inode * inode, struct file * file){
   return 0;
  }
 
- ssize_t my_read_cdev (struct file * file, char *user_addr, size_t n, loff_t * off){
-   MyDev* obj=(struct MyDev *)file->private_data;
-
-   while(isEmply(obj)){//队列为空
-      if(file->f_flags&O_NONBLOCK)//非阻塞模式
-        return -EAGAIN;
-      
-      //阻塞：直到条件满足
-      int ret=wait_event_interruptible(obj->rq,!isEmply(obj));//或者 wait_event(wq,condition) //深度睡眠
-      if (ret)//信号被中断
-      {
-        return -EINTR;
-      }
-      
-   }
-   
-    int sz=size(obj);//对多可以读取的字节数量
-
-    
-      int m=n<sz?n:sz;//实际 需要读取的字节数量
-      char tmp[m];
-
-      //读取m个字节到tmp中
-      readdate(obj,tmp,m);
-      //复制回用户空间
-      int r=copy_to_user(user_addr, tmp,m);
-      if (r){
-        return -EFAULT;
-      }
-      //通知 有空间去写了
-      wake_up_interruptible(&obj->wq);
-      return m;
- }
+ 
  ssize_t my_write_cdev (struct file *file, const char *user_addr, size_t n, loff_t * off){
    MyDev* obj=(struct MyDev *)file->private_data;
 
-   while( isFull(obj)){//缓冲区满了
-      if(file->f_flags&O_NONBLOCK)//非阻塞模式
-          return -EAGAIN;
-      
-      //阻塞：直到 条件满足
-      int ret=wait_event_interruptible(obj->wq, !isFull(obj)  );//或者 wait_event(wq,condition) //深度睡眠
-      if (ret)//信号被中断
-      {
-        return -EINTR;
-      }
+  
+   char tmp;
+   int r=copy_from_user(&tmp,user_addr ,1);//临时写入到tmp中
+   printk(KERN_ALERT "get cmd %c,n=%d\n",tmp,n);
+   switch (tmp)
+   {
+   case '0':
+      obj->retCode=POLLIN | POLLWRNORM;
+      wake_up_interruptible(&obj->rq);
+      break;
+   case '1':
+      obj->retCode=POLLOUT | POLLWRNORM;
+      wake_up_interruptible(&obj->wq);
+      break;  
+   case '2':
+      obj->retCode=POLLHUP;
+      wake_up_interruptible(&obj->rq);
+      break;  
+   case '3':
+      obj->retCode=POLLERR;
+      wake_up_interruptible(&obj->rq);
+      wake_up_interruptible(&obj->wq);
+      break;  
+   default:
+    break;
    }
-   
-   int sz=avail(obj);//剩余写的空间
-
-   
-   int m=n<sz?n:sz;//实际写的空间
-   char tmp[m];
-   int r=copy_from_user(tmp,user_addr ,m);//临时写入到tmp中
-   if (r)
-     return -EFAULT;
-    //tmp复制回obj->BUF中
-    
-    writedata(obj,tmp,m);
   //唤醒读队列，因为已经写了数据，可以读取了
-  wake_up_interruptible(&obj->rq);
-  return m;
+  return n;
  }
 //本函数的作用
 
@@ -140,29 +67,20 @@ int my_open_cdev (struct inode * inode, struct file * file){
 // 3.返回值 mask 告诉内核，当前设备的状态，如果 mask!=0, 上层的 select,poll不会 sleep
 __poll_t my_poll_cdev (struct file *file, struct poll_table_struct *ptb){
   MyDev* obj=(struct MyDev *)file->private_data;
-  __poll_t mask=0;
-  
+  __poll_t mask=obj->retCode;
+  obj->retCode=0;
+
   // 调用  ptb->qproc(file, &obj->rq, ptb);
   poll_wait(file, &obj->rq, ptb);
   poll_wait(file, &obj->wq, ptb);
 
-  if (!isEmply(obj))//不空,可读
-  {
-    mask |= POLLIN | POLLRDNORM;
-  }
-  
-  if (!isFull(obj))//不满,可写
-  {
-    mask |= POLLOUT | POLLWRNORM;
-  }
-  
+
   return mask;
 }
 struct file_operations ops={
   .owner=THIS_MODULE,
   .open=my_open_cdev,
   .release=my_release_cdev,
-  .read=my_read_cdev,
   .write=my_write_cdev,
   .poll=my_poll_cdev,
 };
@@ -171,12 +89,16 @@ struct MyDev mydev;
 dev_t devno;
 
 // 编译后的操作：
-// 1.sudo insmod ./my_cdev.ko
+// 1.sudo insmod ./io_poll_demo_retcode.ko
 // 2.cat /proc/devices |grep mydev ,看到设备号是237
 // 3.mknod /dev/myrw c 237 251
 // chmod 777 /dev/myrw
-// 4.1 ./open_select
-// 4.2 echo xxx> /dev/myrw 
+// 4.1: ./app_iopoll_retcode /dev/myrw 观察控制台打印
+// 4.2 echo -n '0'> /dev/myrw 
+//  0->表示有数据可读
+//  1->数据可写
+//  2->HUP
+//  3->ERR
 int __init my_cdev_rw_init(void){
        //1.自动注册设备号
        //   参数：
@@ -197,7 +119,6 @@ int __init my_cdev_rw_init(void){
       r=cdev_add(&mydev._cdev,devno, 1);
 
       //初始化队列
-      mydev.head=mydev.tail=0;
       init_waitqueue_head(&mydev.rq);
       init_waitqueue_head(&mydev.wq);
 

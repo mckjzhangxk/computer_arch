@@ -34,7 +34,7 @@ export PKG_CONFIG_PATH=/home/hack520/project/libuv/build/lib/pkgconfig:/home/hac
 
 # 配置
 
-# LDFLAGS：指定的原因是 编译 dig 的时候， dig依赖 isc.so,iso.so 依赖 openssl,这样默认没有设置 SSL 路径
+# LDFLAGS：指定的原因是 编译 dig 的时候， dig依赖 isc.so,iso.so 依赖 openssl,这里默认没有设置 SSL 路径
 # LIBS 设置的 原因同上
 CC=arm-linux-gnueabi-gcc \
 LDFLAGS=-L/home/hack520/project/openssl-3.4.2/build/lib LIBS="-lssl -lcrypto -ldl -latomic" \

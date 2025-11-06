@@ -15,9 +15,9 @@
 - 编译生成：
 - - vmlinux:ELF格式的kernel，不能裸机运行
 - - zImage: objcopy vmlinux  会获得 zImage(可用于裸机，但uboot不识别)
-- - uImage: mkimage(zImage) 会获得uImage, mkimage需要apt安装或者编译查看uboot的tool目录。
+- - uImage: mkimage(zImage) 会获得uImage, <font color=gree>uboot 引导加载时需要的kernel格式</font>,mkimage需要apt安装或者编译查看uboot的tool目录。
 - 编译内核模块
-- - 编译menuconfih标注为 M的模块。
+- - 编译menuconfig标注为 M的模块。
 - - make modules
 - - 会生成.ko(kernel object)的文件。eg:dm9000.ko
 
