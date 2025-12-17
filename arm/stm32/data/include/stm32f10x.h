@@ -15,15 +15,15 @@
   *          is using in the C source code, usually in main.c. This file contains:
   *           - Configuration section that allows to select:
   *              - The device used in the target application
-  *              - To use or not the peripheral�s drivers in application code(i.e. 
-  *                code will be based on direct access to peripheral�s registers 
+  *              - To use or not the peripheral�s drivers in application code(i.e. 
+  *                code will be based on direct access to peripheral�s registers 
   *                rather than drivers API), this option is controlled by 
   *                "#define USE_STDPERIPH_DRIVER"
   *              - To change few application-specific parameters such as the HSE 
   *                crystal frequency
   *           - Data structures and the address mapping for all peripherals
   *           - Peripheral's registers declarations and bits definition
-  *           - Macros to access peripheral�s registers hardware
+  *           - Macros to access peripheral�s registers hardware
   *
   ******************************************************************************
   * @attention
@@ -886,12 +886,12 @@ typedef struct
 
 typedef struct
 {
-  __IO uint32_t IMR;
-  __IO uint32_t EMR;
-  __IO uint32_t RTSR;
-  __IO uint32_t FTSR;
+  __IO uint32_t IMR;// 外部中断 屏蔽位寄存器
+  __IO uint32_t EMR;// 外部事件 屏蔽位寄存器
+  __IO uint32_t RTSR;// 上升沿 触发配置 寄存器
+  __IO uint32_t FTSR;// 下降沿 触发配置 寄存器
   __IO uint32_t SWIER;
-  __IO uint32_t PR;
+  __IO uint32_t PR;// 外部中断挂起寄存器, 对应位 置1，表示有中断来到
 } EXTI_TypeDef;
 
 /** 
@@ -1000,12 +1000,12 @@ typedef struct
 
 typedef struct
 {
-  __IO uint32_t CRL;
-  __IO uint32_t CRH;
-  __IO uint32_t IDR;
-  __IO uint32_t ODR;
-  __IO uint32_t BSRR;
-  __IO uint32_t BRR;
+  __IO uint32_t CRL;// 用于配置 0-7 引脚，每个引脚 对应4bits， CNF[2bit],Mode[2bit]，用于输入/输出模式的配置！
+  __IO uint32_t CRH;// 用于配置 8-15引脚，
+  __IO uint32_t IDR;  // 输入数据寄存器， 读取对应引脚的 输入值
+  __IO uint32_t ODR;// 控制16个引脚， 输出模式 就是对应引脚的输出 ，输入模式： 控制引脚的默认输入值（如设置 上拉、下拉）
+  __IO uint32_t BSRR; //BSRR--> ODR, 对应位 置1
+  __IO uint32_t BRR; // BRR--> ODR, 对应位 置0
   __IO uint32_t LCKR;
 } GPIO_TypeDef;
 
@@ -1081,7 +1081,7 @@ typedef struct
   __IO uint32_t APB2RSTR;
   __IO uint32_t APB1RSTR;
   __IO uint32_t AHBENR;
-  __IO uint32_t APB2ENR;
+  __IO uint32_t APB2ENR;// AB2总线下 控制时钟的使能（eg uart1,gpioA,gpioC）
   __IO uint32_t APB1ENR;
   __IO uint32_t BDCR;
   __IO uint32_t CSR;

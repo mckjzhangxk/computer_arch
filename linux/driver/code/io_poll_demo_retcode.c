@@ -68,13 +68,16 @@ int my_open_cdev (struct inode * inode, struct file * file){
 __poll_t my_poll_cdev (struct file *file, struct poll_table_struct *ptb){
   MyDev* obj=(struct MyDev *)file->private_data;
   __poll_t mask=obj->retCode;
+  
+  // 这一行是 产生busy loop 的原因，  如果不清理，永远都会执行
   obj->retCode=0;
+
 
   // 调用  ptb->qproc(file, &obj->rq, ptb);
   poll_wait(file, &obj->rq, ptb);
   poll_wait(file, &obj->wq, ptb);
 
-
+  printk(KERN_ALERT "poll call,%d",mask);
   return mask;
 }
 struct file_operations ops={
@@ -90,7 +93,7 @@ dev_t devno;
 
 // 编译后的操作：
 // 1.sudo insmod ./io_poll_demo_retcode.ko
-// 2.cat /proc/devices |grep mydev ,看到设备号是237
+// 2.cat /proc/devices |grep mycdev ,看到设备号是237
 // 3.mknod /dev/myrw c 237 251
 // chmod 777 /dev/myrw
 // 4.1: ./app_iopoll_retcode /dev/myrw 观察控制台打印

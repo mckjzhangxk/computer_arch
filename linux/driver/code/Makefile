@@ -45,7 +45,7 @@ obj-m +=my_cdev_timer.o
 
 obj-m +=my_cdev_led.o
 obj-m +=my_cdev_led_dt.o
-
+obj-m +=my_cdev_parallel.o
 
 #数据结构 demo
 obj-m +=struct_list_demo.o

@@ -1,0 +1,17 @@
+
+
+min = 1; time = 0;
+
+icrnl ixon 
+opost
+isig icanon iexten echo
+
+
+
+
+
+ min = 0; time = 1;
+
+-icrnl -ixon
+-opost
+-isig -icanon -iexten -echo

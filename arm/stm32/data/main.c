@@ -1,4 +1,7 @@
 #include "stm32f10x.h"
+
+//arm-none-eabi-objcopy -O binary -j ER_IROM1 led.elf led.bin
+
 int main(){
     RCC->APB2ENR|=0x10;
     GPIOC->CRH|=0x00300000;//配置PC13 为推挽输出模式,P114

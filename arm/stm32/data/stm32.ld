@@ -13,7 +13,7 @@ SECTIONS
     . = ALIGN(4);
   } > FLASH
 
-  .data : {
+  RW_IRAM1 : {
     *(.data*)
     . = ALIGN(4);
   } > RAM AT > FLASH
