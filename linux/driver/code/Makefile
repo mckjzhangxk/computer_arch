@@ -46,10 +46,14 @@ obj-m +=my_cdev_timer.o
 obj-m +=my_cdev_led.o
 obj-m +=my_cdev_led_dt.o
 obj-m +=my_cdev_parallel.o
+obj-m +=my_cdev_button_irq.o
+
 
 #数据结构 demo
 obj-m +=struct_list_demo.o
 obj-m +=struct_rb_tree_demo.o
+obj-m +=my_cdev_button_irq_tasklet.o
+obj-m +=my_cdev_button_irq_workqueue.o
 
 # 如果有多个源文件(a.o,b.o,c.o)组成一个 fun.o，需要这么写：
 # obj-m += func.o

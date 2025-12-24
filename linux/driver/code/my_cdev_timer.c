@@ -27,6 +27,8 @@ int my_open_cdev (struct inode * inode, struct file * file){
     // inode->i_cdev是cdev_add传入的地址，  也就是MyDev 成员_cdev的地址
     MyDev* obj=(struct MyDev *)file->private_data;
 
+
+
     obj->timer.expires= jiffies + HZ;
     obj->timer.function=timer_fn;
     obj->second=0;
@@ -89,7 +91,8 @@ int __init my_cdev_rw_init(void){
       r=cdev_add(&mydev._cdev,devno, 1);
 
 
-      // init_timer(&mydev.timer);
+    //定时器的函数，只会在注册他的 cpu 上执行
+    //init_timer(&mydev.timer);
 
       printk("cdev_add %d\n",r);
       return 0;

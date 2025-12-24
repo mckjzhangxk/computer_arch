@@ -6,9 +6,6 @@
 #include <linux/of_irq.h>
 #include <linux/interrupt.h>
 
-
-#define LED_OFF _IO('z',0)
-#define LED_ON  _IO('z',1)
  
 
 typedef struct MyDev
@@ -17,6 +14,7 @@ typedef struct MyDev
   dev_t devno;
   int gpx1;
   int irq;
+  struct work_struct my_work;
 }MyDev;
 
 static struct MyDev mydev;
@@ -31,12 +29,18 @@ static struct MyDev mydev;
 
 static irqreturn_t my_button_irq_handler(int irq, void *dev_id){
   struct MyDev* dev=(struct MyDev*)dev_id;
-  int value=gpio_get_value(dev->gpx1);
-  printk("my_button_irq_handler: gpio:%d, value:%d\n", dev->gpx1, value);
+  // int value=gpio_get_value(dev->gpx1);
+  // printk("my_button_irq_handler: gpio:%d, value:%d\n", dev->gpx1, value);
+  schedule_work(&dev->my_work);
   return IRQ_HANDLED;
 }
 
+void work_queue_func(struct work_struct  *work){
+  struct MyDev* dev=container_of(work, struct MyDev, my_work);
+  int value=gpio_get_value(dev->gpx1);
+  printk("work_queue_func: gpio:%d, value:%d\n", dev->gpx1, value);
 
+}
 static int button_setup(struct MyDev* dev){
   struct device_node *dtr= of_find_node_by_path("/fs4412-leds");
   if(!dtr)
@@ -63,6 +67,9 @@ static int button_setup(struct MyDev* dev){
     return -1;
   }
   dev->irq=irq;
+
+
+  INIT_WORK(&dev->my_work, work_queue_func);
   printk("button_setup ok, gpio:%d, irq:%d\n", dev->gpx1, dev->irq);
   return 0;
 }
